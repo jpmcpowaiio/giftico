@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J.P. Morgan | Executive Gift Vault</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --off-white: #F4F4F4;
+            --pure-white: #FFFFFF;
+            --black: #000000;
+            --jpm-gold: #AD936E;
+            --sidebar-width: 280px;
+            --zomato-blue: #1c2331;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: var(--black); height: 100vh; overflow: hidden; color: var(--black); }
+
+        /* --- LOGIN --- */
+        #login-screen { position: fixed; inset: 0; background: var(--black); display: flex; justify-content: center; align-items: center; z-index: 9999; }
+        .login-box { background: var(--off-white); width: 420px; padding: 60px 40px; border-top: 4px solid var(--black); }
+        .login-input { width: 100%; padding: 15px 0; background: transparent; border: none; border-bottom: 2px solid var(--black); margin-bottom: 30px; outline: none; font-weight: 500; }
+        .login-btn { width: 100%; padding: 18px; background: var(--black); color: white; border: none; text-transform: uppercase; letter-spacing: 2px; font-size: 11px; cursor: pointer; transition: 0.3s; }
+
+        /* --- DASHBOARD --- */
+        #main-dashboard { display: none; height: 100vh; grid-template-columns: var(--sidebar-width) 1fr; }
+        aside { background: var(--black); padding: 50px 30px; display: flex; flex-direction: column; border-right: 1px solid #1A1A1A; }
+        .nav-link { color: #666; text-decoration: none; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 25px; cursor: pointer; }
+        .nav-link.active { color: var(--pure-white); font-weight: 700; border-left: 3px solid var(--pure-white); padding-left: 15px; }
+
+        main { background: var(--off-white); overflow-y: auto; padding: 60px; }
+        .glass-card { background: var(--pure-white); padding: 40px; margin-bottom: 30px; border: 1px solid #eee; position: relative; transition: 0.3s; }
+        .section-title { font-size: 10px; text-transform: uppercase; letter-spacing: 3px; color: #999; margin-bottom: 25px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+
+        .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; }
+        .data-value { font-size: 32px; font-weight: 200; color: #222; }
+
+        /* --- 3D CARD ANIMATIONS --- */
+        #vault-overlay { 
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95); 
+            backdrop-filter: blur(15px); display: none; 
+            justify-content: center; align-items: center; z-index: 10001; 
+        }
+        .vault-container { width: 90%; max-width: 1100px; display: flex; overflow-x: auto; gap: 30px; padding: 50px; scroll-behavior: smooth; }
+        
+        .card-3d { min-width: 320px; height: 450px; perspective: 1000px; cursor: pointer; }
+        .card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform-style: preserve-3d; }
+        .card-3d.flipped .card-inner { transform: rotateY(180deg); }
+
+        .card-face { 
+            position: absolute; width: 100%; height: 100%; backface-visibility: hidden; 
+            border-radius: 15px; padding: 30px; display: flex; flex-direction: column; justify-content: space-between;
+        }
+        .card-front { background: var(--zomato-blue); color: white; border: 1px solid #333; }
+        .card-back { background: #f8f9fa; color: #111; transform: rotateY(180deg); border: 2px solid var(--jpm-gold); text-align: center; justify-content: center; }
+
+        .copy-btn { font-size: 9px; color: var(--jpm-gold); border: 1px solid var(--jpm-gold); padding: 4px 8px; border-radius: 4px; margin-left: 10px; text-transform: uppercase; }
+        
+        .close-vault { position: fixed; top: 40px; right: 40px; color: white; border: 1px solid white; padding: 10px 20px; cursor: pointer; font-size: 11px; letter-spacing: 2px; }
+
+        ::-webkit-scrollbar { height: 6px; }
+        ::-webkit-scrollbar-thumb { background: var(--jpm-gold); border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+    <div id="login-screen">
+        <div class="login-box">
+            <img src="https://i0.wp.com/rooftopleadership.com/wp-content/uploads/2023/04/JP-Morgan-Chase-Logo-e1681390058665.png?fit=3840%2C1267&ssl=1" width="220" style="filter: brightness(0); margin-bottom: 40px; display: block;">
+            <input type="text" id="u_email" class="login-input" placeholder="aryansanvi@jpmcpowai.in">
+            <input type="password" id="u_pass" class="login-input" placeholder="••••••••">
+            <button class="login-btn" onclick="login()">Enter Executive Vault</button>
+        </div>
+    </div>
+
+    <div id="vault-overlay">
+        <div class="close-vault" onclick="closeVault()">EXIT PORTFOLIO</div>
+        <div class="vault-container" id="vault-items"></div>
+    </div>
+
+    <div id="main-dashboard">
+        <aside>
+            <img src="https://i0.wp.com/rooftopleadership.com/wp-content/uploads/2023/04/JP-Morgan-Chase-Logo-e1681390058665.png?fit=3840%2C1267&ssl=1" width="160" style="filter: invert(1); margin-bottom: 60px;">
+            <a class="nav-link active">Digital Vouchers</a>
+            <div style="margin-top: auto;">
+                <p style="color: white; font-size: 11px; letter-spacing: 1px;">SANVI ARYAN</p>
+                <p style="color: #444; font-size: 8px;">ENCRYPTION: AES-256</p>
+            </div>
+        </aside>
+
+        <main>
+            <div class="glass-card" style="background: #000; color: white;">
+                <p class="section-title" style="color: #444;">Total Asset Valuation</p>
+                <h1 style="font-size: 48px; font-weight: 100;">₹1,10,000.00</h1>
+            </div>
+
+            <div class="grid-2">
+                <div class="glass-card" onclick="openVault('Zomato', 10, 500, '#cb202d')">
+                    <p class="section-title">Zomato Dining</p>
+                    <div class="data-value">₹5,000</div>
+                    <p style="font-size: 10px; color: #999; margin-top: 10px;">10 CARDS • TAP TO VIEW</p>
+                </div>
+                <div class="glass-card" onclick="openVault('Uber', 10, 500, '#000000')">
+                    <p class="section-title">Uber Mobility</p>
+                    <div class="data-value">₹5,000</div>
+                    <p style="font-size: 10px; color: #999; margin-top: 10px;">10 CARDS • TAP TO VIEW</p>
+                </div>
+                <div class="glass-card" onclick="openVault('Ixigo', 10, 1000, '#ec5b24')">
+                    <p class="section-title">Ixigo Travel</p>
+                    <div class="data-value">₹10,000</div>
+                    <p style="font-size: 10px; color: #999; margin-top: 10px;">10 CARDS • TAP TO VIEW</p>
+                </div>
+                <div class="glass-card" onclick="openVault('MakeMyTrip', 3, 25000, '#008ec9')">
+                    <p class="section-title">MakeMyTrip</p>
+                    <div class="data-value">₹75,000</div>
+                    <p style="font-size: 10px; color: #999; margin-top: 10px;">3 CARDS • TAP TO VIEW</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function login() {
+            if(document.getElementById('u_email').value === 'aryansanvi@jpmcpowai.in' && document.getElementById('u_pass').value === 'Aut670273*#') {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('main-dashboard').style.display = 'grid';
+            }
+        }
+
+        function openVault(brand, count, val, color) {
+            const container = document.getElementById('vault-items');
+            container.innerHTML = '';
+            
+            for(let i = 1; i <= count; i++) {
+                let code = (brand === 'Zomato' && i === 1) ? "7000 5667 3757 1620" : 
+                           `${Math.floor(1000+Math.random()*8999)} ${Math.floor(1000+Math.random()*8999)} ${Math.floor(1000+Math.random()*8999)} ${Math.floor(1000+Math.random()*8999)}`;
+                let pin = (brand === 'Zomato' && i === 1) ? "736728" : 
+                          `${Math.floor(100+Math.random()*899)} ${Math.floor(100+Math.random()*899)}`;
+
+                container.innerHTML += `
+                <div class="card-3d" onclick="this.classList.toggle('flipped')">
+                    <div class="card-inner">
+                        <div class="card-face card-front" style="background: ${color}">
+                            <div>
+                                <p style="font-size: 10px; letter-spacing: 2px; opacity: 0.6;">${brand.toUpperCase()} GIFT CARD</p>
+                                <h2 style="font-weight: 300; margin-top: 10px;">Value: ₹${val.toLocaleString()}</h2>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px;">
+                                <p style="font-size: 8px; opacity: 0.7; margin-bottom: 5px;">GIFT CARD CODE</p>
+                                <p style="font-family: monospace; font-size: 16px;">${code}</p>
+                            </div>
+                            <p style="font-size: 9px; text-align: center; opacity: 0.5;">TAP TO REVEAL PIN</p>
+                        </div>
+                        <div class="card-face card-back">
+                            <p style="font-size: 10px; color: #888; margin-bottom: 10px;">SECURITY PIN</p>
+                            <h1 style="letter-spacing: 5px; color: #000;">${pin}</h1>
+                            <div style="margin-top: 30px;">
+                                <span class="copy-btn" onclick="event.stopPropagation(); alert('PIN Copied')">Copy PIN</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+            }
+            document.getElementById('vault-overlay').style.display = 'flex';
+        }
+
+        function closeVault() { document.getElementById('vault-overlay').style.display = 'none'; }
+    </script>
+</body>
+</html>
